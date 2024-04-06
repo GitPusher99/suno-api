@@ -5,37 +5,19 @@ import { corsHeaders } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  if (req.method === 'GET') {
-    try {
-
-      const limit = await (await sunoApi).get_credits();
-
-
-      return new NextResponse(JSON.stringify(limit), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          ...corsHeaders
-        }
-      });
-    } catch (error) {
-      console.error('Error fetching limit:', error);
-
-      return new NextResponse(JSON.stringify({ error: 'Internal server error. ' + error }), {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          ...corsHeaders
-        }
-      });
-    }
-  } else {
-    return new NextResponse('Method Not Allowed', {
+  try {
+    const limit = await (await sunoApi).get_credits();
+    return NextResponse.json(limit, {
+      headers: corsHeaders
+    });
+  } catch (error) {
+    console.error('Error fetching limit:', error);
+    return NextResponse.json({ error: 'Internal server error. ' + error }, {
+      status: 500,
       headers: {
-        Allow: 'GET',
+        'Content-Type': 'application/json',
         ...corsHeaders
-      },
-      status: 405
+      }
     });
   }
 }
